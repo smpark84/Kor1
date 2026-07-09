@@ -1,0 +1,21 @@
+pandas>=2.0
+numpy>=1.24
+pyyaml>=6.0
+python-dotenv>=1.0
+
+# 데이터 수집
+pykrx>=1.0.45
+finance-datareader>=0.9.50
+OpenDartReader>=0.2.0
+
+# 대시보드 (Phase 1)
+streamlit>=1.30
+
+# 알림 (Phase 3+)
+python-telegram-bot>=21.0
+
+# 백테스트/스코어링 (필요 시)
+scikit-learn>=1.3
+
+# 테스트
+pytest>=7.4

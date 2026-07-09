@@ -1,0 +1,41 @@
+# 일반 설정. 키 값은 절대 여기에 직접 쓰지 않고 ${ENV_VAR} 형태로 환경변수를 참조한다.
+# (지침서 9장 보안 규칙)
+
+app:
+  name: "Kor1 세력주 탐지 프로그램"
+  phase: 1  # 1=배치 스크리너, 2=준실시간, 3=알림봇, 4=실시간 WebSocket
+  timezone: "Asia/Seoul"
+
+universe:
+  markets: ["KOSPI", "KOSDAQ"]  # 코넥스는 선택 사항, 기본 제외
+  exclude_admin_issues: true     # 관리종목 제외 여부 (백테스트에서는 반드시 포함, 6장 참고)
+  min_market_cap_krw: 0          # 0 = 필터 없음. 소형주 위주 필터링 시 조정
+
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  data_cache: "data/cache"
+  data_backtest: "data/backtest"
+  logs: "logs"
+
+collectors:
+  krx:
+    request_interval_sec: 1.0   # 과도한 크롤링 방지 (2.6 원칙)
+  dart:
+    api_key: "${DART_API_KEY}"
+    request_interval_sec: 0.5
+
+kis:
+  # Phase 2+. 시세/계좌 조회 전용. 주문 스코프는 신청하지 않는다 (2장 원칙).
+  app_key: "${KIS_APP_KEY}"
+  app_secret: "${KIS_APP_SECRET}"
+  account_no: "${KIS_ACCOUNT_NO}"
+
+telegram:
+  # Phase 3+. 정보 알림 전용, 주문 실행 없음.
+  bot_token: "${TELEGRAM_BOT_TOKEN}"
+  chat_id: "${TELEGRAM_CHAT_ID}"
+
+logging:
+  level: "INFO"
+  mask_secrets: true   # 로그에 API 키/토큰/계좌번호가 그대로 출력되지 않도록 마스킹

@@ -1,0 +1,64 @@
+# 프로젝트 작업일지
+
+> 이 파일은 모든 개발 세션의 시작점이다. 새 세션을 시작하면 반드시 이 파일의 최신 항목과
+> "다음 세션에서 할 일"을 먼저 읽고 그 지점부터 이어서 작업한다. 파일 하나를 생성하거나
+> 의미 있게 수정할 때마다 아래 형식으로 즉시 기록한다.
+>
+> `- [파일 경로] : [수행한 작업 요약] : [상태: 진행중/완료/보류]`
+
+---
+
+## 2026-07-09 세션 시작
+
+### 컨텍스트
+- 기준 문서: `/root/.claude/uploads/.../62d1a670-____________________.md`
+  (「프로젝트 지침서: 국내 주식시장 "세력주" 탐지 및 매매 국면 추정 프로그램」 v1.0, 2026-07-10)
+- 이 저장소(`smpark84/Kor1`, 브랜치 `claude/work-log-documentation-ged1t7`)를 지침서 7장의
+  `D:/project/{프로젝트명}` 루트로 취급한다. 로컬 Windows 경로 대신 저장소 루트를 프로젝트
+  루트로 사용 (지침서 0장의 "project 폴더 충돌 방지" 원칙을 이 환경에 맞게 적용한 것).
+- 지침서 원본은 이 세션의 참고 자료일 뿐 저장소에 커밋하지 않는다(업로드 파일 경로는 이
+  세션 로컬 임시 경로). 대신 본 작업일지와 `sources.md`, `docs/`에 지침서 내용을 반영해
+  저장소 자체에서 지침을 확인할 수 있도록 한다.
+
+### 이번 세션 작업 내역
+- [project_작업일지.md] : 작업일지 최초 생성 (8.1 규칙 적용) : 완료
+- [디렉토리 구조] : 7장 폴더 구조대로 `config/ data/{raw,processed,cache,backtest} scripts/{collectors,indicators,scoring,backtest,dashboard,alerts,utils} docs/ logs/ tests/ notebooks/` 생성, 빈 디렉토리는 `.gitkeep`으로 git 추적 : 완료
+- [.gitignore] : `.env`, `data/**`, `logs/**`, `__pycache__` 등 민감/대용량 경로 제외 설정 (9장 보안 규칙) : 완료
+- [.env.example] : DART_API_KEY, KIS_APP_KEY/SECRET/ACCOUNT_NO, TELEGRAM_BOT_TOKEN/CHAT_ID, DATA_GO_KR_API_KEY 키 이름만 템플릿으로 작성 (값 없음) : 완료
+- [README.md] : 프로젝트 개요, 투자자문 아님 고지 문구, 범위 밖 항목, 폴더 구조, 시작 방법, 보안 안내 작성 : 완료
+- [docs/project_spec.md] : 사용자 업로드 원본 지침서(v1.0, 2026-07-10) 전문을 저장소에 보존 (업로드 경로는 세션 임시 경로라 이관 필요). 18KB 초과(약 30KB)이지만, 이는 원문 보존용 참조 문서이며 코드 모듈이 아니고 핵심 내용은 아래 docs/*.md로 주제별 분리했으므로 8.2 분할 규칙의 예외로 처리(설계 결정 — 필요 시 사용자 확인 요청 가능) : 완료
+- [sources.md] : 지침서 11장 출처 61개(신뢰도별 6개 카테고리)를 이관, 이후 세션이 리서치를 추가할 "추가 리서치 로그" 섹션 마련 : 완료
+- [docs/legal_notice.md] : 2장 법적/윤리적 가드레일 요약, README/대시보드/알림용 표준 고지 문구, 금지 표현 vs 허용 표현 대조표, 절대 구현 금지 기능 목록 정리 : 완료
+- [docs/architecture.md] : 4장 파이프라인을 모듈↔저장소 파일 경로 매핑 표로 정리, Phase 로드맵 요약 : 완료
+- [docs/indicator_spec.md] : 1.4장 지표(A~G) 표, 1.5장 국면(Wyckoff 4국면) 정의, 스코어링 설계안, MVP 우선 지표 5개 1차 제안(사용자 확인 필요) : 완료
+- [docs/data_source_spec.md] : 3장 데이터 소스 표, MVP 우선순위, collector 모듈 매핑, ToS/레이트리밋 주의사항 : 완료
+- [config/settings.yaml] : 앱/유니버스/경로/수집기/KIS/텔레그램/로깅 설정, 키 값은 전부 `${ENV_VAR}` 참조 형태 : 완료
+- [config/indicators_config.yaml] : 거래량/수급/신용공매도/호가/VI/패턴/스코어링 파라미터 초기 참고값 (백테스트 전까지 잠정치임을 주석으로 명시) : 완료
+- [scripts/utils/logger.py] : `logs/{YYYY-MM-DD}/{name}.log` 로거, API 키/시크릿/토큰/계좌번호 정규식 마스킹 필터 포함 : 완료
+- [scripts/utils/config_loader.py] : `.env` 로드 + `config/*.yaml`의 `${ENV_VAR}` 재귀 치환 로더 : 완료
+- [scripts/collectors/collector_krx.py] : pykrx 기반 OHLCV + 투자자별 순매수 거래대금 수집기, `data/raw/krx/{ticker}/`에 CSV 저장, CLI(`python -m scripts.collectors.collector_krx <ticker> <start> <end>`) 제공. 조회 전용, 주문 기능 없음 (2장 원칙) : 완료
+- [scripts/**/__init__.py, tests/__init__.py] : 패키지 임포트 가능하도록 빈 초기화 파일 생성 : 완료
+- [requirements.txt] : pandas/pykrx/finance-datareader/OpenDartReader/streamlit/python-telegram-bot/scikit-learn/pytest 등 의존성 명시 : 완료
+- 문법 검증: `python3 -m py_compile`로 logger.py, config_loader.py, collector_krx.py 구문 오류 없음 확인 (pykrx 등 외부 패키지 미설치 상태라 런타임 실행/pip install까지는 검증 못함 — 다음 세션에서 `pip install -r requirements.txt` 후 실제 수집 테스트 필요)
+
+### 리서치 관련
+- 이번 세션은 신규 웹 리서치를 수행하지 않았다. 지침서에 이미 포함된 11장 출처(61개)만
+  `sources.md`로 이관했다. 신규 조사가 필요하면 다음 세션에서 `sources.md` 하단 로그에 추가.
+
+### 열린 이슈 / 사용자 확인 필요 (2.8 원칙에 따라 기록)
+1. **MVP 우선 지표 3~5개 확정**: `docs/indicator_spec.md` 하단에 1차 제안(거래량 급증률,
+   기관+외국인 동반 순매수, 신용융자잔고율, 정배열+눌림목, VI 발동 이력)을 적어두었다.
+   임의로 최종 확정하지 않았으니 다음 세션 시작 시 사용자에게 확인 요청할 것.
+2. **DART/KIS/텔레그램 API 키 미보유 상태**: `.env`는 아직 생성하지 않았다(값이 없으므로).
+   실제 수집을 시작하려면 사용자가 키를 발급받아 `.env`에 입력해야 함.
+3. **`docs/project_spec.md` 18KB 초과**: 8.2 분할 규칙의 취지(코드 모듈 관리 용이성)와는
+   성격이 다른 "원문 보존" 목적이라 그대로 두었음. 문제 삼을 경우 챕터별로 쪼개는 것도 가능.
+
+### 다음 세션에서 할 일
+- [ ] 사용자에게 MVP 우선 지표 3~5개 최종 확정 여부 확인 (위 열린 이슈 1)
+- [ ] `pip install -r requirements.txt` 후 `collector_krx.py` 실제 실행 테스트 (예: 삼성전자 005930)
+- [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
+- [ ] `scripts/indicators/indicator_volume.py` 부터 우선 지표 계산 로직 구현 시작
+- [ ] `scripts/scoring/scoring_engine.py` 초안 (가중합 방식, config/indicators_config.yaml의 weights 사용)
+- [ ] `tests/` 하위에 collector/indicator 단위 테스트 추가
+- [ ] 위 항목들 진행하면서 파일 생성/수정 시마다 이 작업일지에 계속 기록할 것 (필수)
