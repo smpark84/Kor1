@@ -176,8 +176,26 @@
   다른 방향을 원하면 다음 세션에서 언제든 변경 가능하도록 "1차 설계안, 백테스트 전 잠정"
   임을 코드에 명시할 예정).
 
+### 2026-07-10 추가 세션 — phase_classifier.py 구현 (열린 이슈 4 해소, 규칙기반 채택)
+- [scripts/scoring/phase_classifier.py] : `classify_phase()`(불리언 신호 조합 → 매집/상승/
+  분산/하락/불명확 5분류, 지침서 1.5 표 기반 규칙 우선순위: distribution > markup > markdown
+  > accumulation > unclear), `classify_phase_row()`(DataFrame.apply용 래퍼) 구현. 모듈
+  최상단에 "1차 설계안, 백테스트 전 잠정, ML 전환은 라벨 데이터 축적 후 판단"이라고 명시 :
+  완료
+- [tests/test_phase_classifier.py] : 7개 단위 테스트(국면 4종 각각, unclear fallback, row
+  래퍼, distribution이 markup보다 우선순위 높음을 검증하는 케이스) 작성 : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **31 passed** (지표 5개 + scoring_engine +
+  build_daily_snapshot + phase_classifier 전부 포함, 회귀 없음) : 완료
+- **이걸로 스코어링~국면분류 1차 파이프라인 뼈대(지표→피처조립→스코어→국면라벨) 전체가
+  코드 레벨에서 연결됨.** 단, 아직 실제 KRX 데이터로는 검증 못함 (이 환경 네트워크 제약,
+  위 열린 이슈 3 참고) — 사용자 PC 등에서 실데이터로 붙여봐야 진짜 검증 완료.
+
 ### 다음 세션에서 할 일
-- [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
+- [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고,
+      되면 실제 데이터를 `build_daily_snapshot` → `scoring_engine` → `phase_classifier`
+      전체 파이프라인에 흘려보는 end-to-end 테스트도 진행
 - [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
+- [ ] 규칙기반 phase_classifier의 임계값/우선순위는 백테스트 전 잠정치 — 6장 백테스트로
+      실제 검증 필요 (아직 미착수)
 - [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 작업 단위 하나 완성 = 커밋 1개. 파일 생성/수정
       시마다 이 작업일지에 계속 기록할 것 (필수)
