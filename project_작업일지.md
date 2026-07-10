@@ -119,9 +119,16 @@
   `is_short_covering()`(숏커버링 감지, 반등 참고 신호) 구현 : 완료
 - [tests/test_indicator_credit_short.py] : 4개 단위 테스트 작성, `pytest` 3 passed 확인 : 완료
 
+### 2026-07-10 추가 세션 — indicator_pattern.py 구현 (MVP 지표 4번)
+- [scripts/indicators/indicator_pattern.py] : `moving_averages()`, `is_bullish_alignment()`
+  (5>20>60>120일선 정배열 판정), `swing_lows()`+`is_ascending_pullback()`(눌림목 저점 계단식
+  상승 근사 판정, rolling min 기반) 구현. 눌림목은 노이즈가 커서 단독 사용 금지·조합 필수라는
+  지침서 지적을 docstring에 명시 : 완료
+- [tests/test_indicator_pattern.py] : 4개 단위 테스트(정배열 상승/하락 케이스, 눌림목 상승/
+  하락 케이스), `pytest` 4 passed 확인 : 완료
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
-- [ ] `scripts/indicators/indicator_pattern.py` (정배열+눌림목) — MVP 지표 4번
 - [ ] `scripts/indicators/indicator_vi.py` (VI 발동 이력) — MVP 지표 5번 (일별 집계로 근사 가능한
       소스 확인 필요, 없으면 Phase 2 실시간 수집 이후로 보류)
 - [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
