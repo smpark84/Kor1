@@ -190,11 +190,24 @@
   코드 레벨에서 연결됨.** 단, 아직 실제 KRX 데이터로는 검증 못함 (이 환경 네트워크 제약,
   위 열린 이슈 3 참고) — 사용자 PC 등에서 실데이터로 붙여봐야 진짜 검증 완료.
 
+### 2026-07-10 추가 세션 — collector_dart.py 프로토타입 구현
+- [scripts/collectors/collector_dart.py] : OpenDartReader 기반 공시 목록 수집기.
+  `_get_client()`(API 키 검증, 없으면 명확한 ValueError), `get_disclosure_list()`,
+  `collect_and_save()`(`data/raw/dart/{ticker}/disclosures.csv`) 구현. CLI 제공. 조회
+  전용, 주문 기능 없음 (2장 원칙) : 완료
+- [tests/test_collector_dart.py] : 네트워크 호출 없이 키 검증 로직만 테스트(2개) —
+  DART_API_KEY 없으면 ValueError, 명시적 키를 주면 그 검증은 통과. 실제 DART API 응답까지는
+  이 환경 네트워크 제약으로 검증 불가(테스트 파일에도 명시) : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **33 passed** : 완료
+
 ### 다음 세션에서 할 일
-- [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고,
-      되면 실제 데이터를 `build_daily_snapshot` → `scoring_engine` → `phase_classifier`
-      전체 파이프라인에 흘려보는 end-to-end 테스트도 진행
-- [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
+- [ ] (환경 제약 있음) `collector_krx.py`, `collector_dart.py`를 네트워크 제약 없는 환경
+      (사용자 PC 등)에서 재검증하고, 되면 실제 데이터를 `build_daily_snapshot` →
+      `scoring_engine` → `phase_classifier` 전체 파이프라인에 흘려보는 end-to-end 테스트도 진행
+- [ ] `scripts/collectors/collector_credit_short.py` 프로토타입 작성 (pykrx로 공매도 잔고는
+      가능 확인함 — `get_shorting_balance_by_date`. 신용융자잔고는 pykrx에 API가 없어
+      FreeSIS 스크래핑이 필요한데, 이 환경에서 페이지 구조를 검증 못해 미구현 상태로 남길
+      계획 — 다음 세션에서 네트워크 되는 환경이면 마저 구현)
 - [ ] 규칙기반 phase_classifier의 임계값/우선순위는 백테스트 전 잠정치 — 6장 백테스트로
       실제 검증 필요 (아직 미착수)
 - [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 작업 단위 하나 완성 = 커밋 1개. 파일 생성/수정
