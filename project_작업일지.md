@@ -110,9 +110,17 @@
   패턴 판정) 작성. 최초 버전은 연속일수 테스트가 실패해 로직 버그를 잡아냄 — `pytest` 3 passed
   확인 : 완료
 
+### 2026-07-10 추가 세션 — indicator_credit_short.py 구현 (MVP 지표 3번)
+- [config/indicators_config.yaml] : credit_short 섹션에 `credit_ratio_lookback_days`,
+  `short_balance_lookback_days`를 명시 추가 (기존엔 spike_pct만 있고 lookback 기간이
+  누락돼 있었음) : 완료
+- [scripts/indicators/indicator_credit_short.py] : `change_rate()`(N일 전 대비 상대
+  변화율 공통 함수), `is_credit_ratio_spike()`, `is_short_balance_spike()`,
+  `is_short_covering()`(숏커버링 감지, 반등 참고 신호) 구현 : 완료
+- [tests/test_indicator_credit_short.py] : 4개 단위 테스트 작성, `pytest` 3 passed 확인 : 완료
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
-- [ ] `scripts/indicators/indicator_credit_short.py` (신용융자잔고율) — MVP 지표 3번
 - [ ] `scripts/indicators/indicator_pattern.py` (정배열+눌림목) — MVP 지표 4번
 - [ ] `scripts/indicators/indicator_vi.py` (VI 발동 이력) — MVP 지표 5번 (일별 집계로 근사 가능한
       소스 확인 필요, 없으면 Phase 2 실시간 수집 이후로 보류)

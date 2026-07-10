@@ -11,7 +11,9 @@ flow:
   co_netbuy_lookback_days: 20    # 기관+외국인 동반 순매수 연속일수 판단 기간
 
 credit_short:
-  credit_ratio_spike_pct: 0.3    # 신용잔고율 급증 판단 기준(상대 증가율, 참고값)
+  credit_ratio_lookback_days: 20  # 신용잔고율 변화율 비교 기준일(N일 전 대비)
+  credit_ratio_spike_pct: 0.3     # 신용잔고율 급증 판단 기준(상대 증가율, 참고값)
+  short_balance_lookback_days: 20
   short_balance_spike_pct: 0.3
 
 orderbook:
