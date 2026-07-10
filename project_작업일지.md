@@ -91,9 +91,16 @@
   - 지표 계산 로직(`indicator_*.py`)은 실제 네트워크 호출 없이 합성/샘플 데이터로 단위
     테스트가 가능하므로, 이 환경에서는 네트워크 검증 대신 지표 로직 구현·테스트를 우선 진행.
 
+### 2026-07-10 추가 세션 — indicator_volume.py 구현 (MVP 지표 1번)
+- [scripts/indicators/indicator_volume.py] : `volume_surge_ratio()`(당일÷직전 N일 평균,
+  당일 제외로 lookahead 왜곡 방지), `is_volume_surge()`(임계값 초과 여부) 구현. 파라미터
+  미지정 시 `config/indicators_config.yaml`의 volume.surge_lookback_days/surge_ratio_threshold
+  사용 : 완료
+- [tests/test_indicator_volume.py] : 합성 데이터(네트워크 불필요)로 3개 단위 테스트 작성 —
+  기본 급증 비율, 당일 제외 검증, 임계값 판정. `pytest` 3 passed 확인 : 완료
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
-- [ ] `scripts/indicators/indicator_volume.py` (거래량 급증률) 구현 — MVP 지표 1번
 - [ ] `scripts/indicators/indicator_flow.py` (수급주체 동반 순매수) — MVP 지표 2번
 - [ ] `scripts/indicators/indicator_credit_short.py` (신용융자잔고율) — MVP 지표 3번
 - [ ] `scripts/indicators/indicator_pattern.py` (정배열+눌림목) — MVP 지표 4번
