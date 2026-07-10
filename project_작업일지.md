@@ -214,16 +214,37 @@
   작성" 항목 완료. 남은 미구현은 신용잔고(FreeSIS) 뿐이며, 이는 네트워크 제약이 있는 이 환경
   구조상 정직하게 남겨둔 것.
 
+### 2026-07-10 추가 세션 — app_streamlit.py 구현 (Phase 1 MVP 대시보드)
+- [scripts/dashboard/app_streamlit.py] : 지표(5개) → `build_daily_snapshot` →
+  `scoring_engine.compute_score` → `phase_classifier.classify_phase` 전체 파이프라인을
+  화면에 보여주는 배치 스크리너. `classify_ticker_phase()`(종목 시계열 → 불리언 신호
+  추출 → 국면분류 호출), `load_screening_table()`(스코어 내림차순 정렬 테이블),
+  `main()`(제목/데모모드 경고/테이블/법적 고지 렌더링) 구현. 이 실행 환경은 KRX 등 외부
+  데이터 접근이 막혀 있어 `_make_demo_ticker_data()`로 생성한 **명시적 "데모" 라벨이 붙은
+  샘플 데이터**를 사용 — 실제 시세인 것처럼 오인되지 않도록 화면 상단에 경고 배너와 종목명에
+  "(데모)" 표기를 붙임(2장 원칙: 오탐/불확실성 고지 의무와 같은 취지) : 완료
+- [tests/test_app_streamlit.py] : 렌더링을 제외한 순수 로직(국면분류 결과가 유효한 라벨
+  집합에 속하는지, 스크리닝 테이블 컬럼/정렬 검증) 2개 테스트 작성 : 완료
+- **UI 실동작 검증**: `PYTHONPATH=/home/user/Kor1 streamlit run scripts/dashboard/app_streamlit.py`
+  로 서버 실행 후 Playwright(사전 설치된 Chromium)로 실제 브라우저 스크린샷 촬영해 확인.
+  최초 시도 시 `ModuleNotFoundError: No module named 'scripts'` 발생 → streamlit이 스크립트
+  자체 디렉터리만 sys.path에 넣고 프로젝트 루트(cwd)는 넣지 않는다는 걸 확인 →
+  `PYTHONPATH=프로젝트루트`를 명시해서 해결. 최종 스크린샷에서 제목, 데모모드 경고, 5개
+  지표+스코어+국면 라벨이 포함된 테이블, 하단 법적 고지 문구까지 정상 렌더링 확인 : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **36 passed** : 완료
+- 이걸로 지침서 5장 Phase 1(MVP: 배치 스크리너 + 정적 대시보드)의 최소 형태가 코드+화면
+  레벨에서 모두 완성됨. 단, 데이터는 여전히 데모 상태 — 실제 KRX 연동은 이 환경 네트워크
+  제약으로 다음 세션(네트워크 되는 환경)에서 마저 진행해야 함.
+
 ### 다음 세션에서 할 일
-- [ ] (환경 제약 있음) `collector_krx.py`, `collector_dart.py`, `collector_credit_short.py`를
-      네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고, 되면 실제 데이터를
-      `build_daily_snapshot` → `scoring_engine` → `phase_classifier` 전체 파이프라인에
-      흘려보는 end-to-end 테스트도 진행
+- [ ] (환경 제약 있음, 최우선) `collector_krx.py`, `collector_dart.py`,
+      `collector_credit_short.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고,
+      실제 데이터를 `app_streamlit.py`의 `load_screening_table()`에 연결해 데모 모드를
+      해제 (지금은 데모 데이터로만 동작)
 - [ ] `collector_credit_short.py`의 `get_credit_balance()` — FreeSIS 스크래핑으로 실제 구현
       (네트워크 되는 환경에서 페이지 구조 확인 후)
 - [ ] 규칙기반 phase_classifier의 임계값/우선순위는 백테스트 전 잠정치 — 6장 백테스트로
       실제 검증 필요 (아직 미착수, 실데이터 없이는 진행 불가)
-- [ ] Streamlit 대시보드(`scripts/dashboard/app_streamlit.py`) 착수 검토 — 지금까지 만든
-      지표~스코어링~국면분류 파이프라인을 눈으로 확인할 수 있는 최소 화면
+- [ ] 알림 봇(`scripts/alerts/telegram_bot.py`, Phase 3)은 아직 미착수 — Phase 1 안정화 이후
 - [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 작업 단위 하나 완성 = 커밋 1개. 파일 생성/수정
       시마다 이 작업일지에 계속 기록할 것 (필수)
