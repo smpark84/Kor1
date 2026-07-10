@@ -99,9 +99,19 @@
 - [tests/test_indicator_volume.py] : 합성 데이터(네트워크 불필요)로 3개 단위 테스트 작성 —
   기본 급증 비율, 당일 제외 검증, 임계값 판정. `pytest` 3 passed 확인 : 완료
 
+### 2026-07-10 추가 세션 — indicator_flow.py 구현 (MVP 지표 2번)
+- [scripts/indicators/indicator_flow.py] : `co_net_buy_streak_days()`(기관+외국인 동반 순매수
+  연속일수), `co_net_buy_cumulative_amount()`(연속구간 누적 순매수 대금),
+  `is_distribution_flow_pattern()`(개인 순매수 급증×기관/외국인 순매도 동시발생 — 분산 국면
+  신호) 구현. 구현 중 `_streak_id`(값이 False로 끊길 때만 그룹 증가) 방식이 그룹 경계를
+  잘못 잡는 버그를 테스트로 발견 → `_run_id`(값이 이전 행과 달라질 때마다 그룹 증가)로 수정 :
+  완료
+- [tests/test_indicator_flow.py] : 3개 단위 테스트(연속일수 리셋, 누적대금 리셋+합산, 분산
+  패턴 판정) 작성. 최초 버전은 연속일수 테스트가 실패해 로직 버그를 잡아냄 — `pytest` 3 passed
+  확인 : 완료
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
-- [ ] `scripts/indicators/indicator_flow.py` (수급주체 동반 순매수) — MVP 지표 2번
 - [ ] `scripts/indicators/indicator_credit_short.py` (신용융자잔고율) — MVP 지표 3번
 - [ ] `scripts/indicators/indicator_pattern.py` (정배열+눌림목) — MVP 지표 4번
 - [ ] `scripts/indicators/indicator_vi.py` (VI 발동 이력) — MVP 지표 5번 (일별 집계로 근사 가능한
