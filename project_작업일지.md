@@ -200,15 +200,30 @@
   이 환경 네트워크 제약으로 검증 불가(테스트 파일에도 명시) : 완료
 - 전체 회귀 확인: `python3 -m pytest tests/` → **33 passed** : 완료
 
+### 2026-07-10 추가 세션 — collector_credit_short.py 프로토타입 구현
+- [scripts/collectors/collector_credit_short.py] : `get_short_balance()`(pykrx
+  `get_shorting_balance_by_date` 래핑, 공매도 잔고 조회 — 정상 구현), `get_credit_balance()`
+  (신용융자잔고, **의도적 미구현**: pykrx에 API 자체가 없고 FreeSIS 스크래핑이 필요한데
+  이 환경 네트워크 제약으로 실제 페이지 구조를 확인·검증할 수 없어 추측성 스크래핑 코드를
+  작성하지 않고 `NotImplementedError` + 사유/참고문서 안내로 명확히 남김),
+  `collect_and_save()`(`data/raw/credit_short/{ticker}/short_balance.csv`) 구현 : 완료
+- [tests/test_collector_credit_short.py] : `get_credit_balance()`가 의도한 대로
+  `NotImplementedError`를 내는지 계약 테스트 1개 작성 : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **34 passed** : 완료
+- 이걸로 다음 세션 할 일 목록의 "collector_dart.py, collector_credit_short.py 프로토타입
+  작성" 항목 완료. 남은 미구현은 신용잔고(FreeSIS) 뿐이며, 이는 네트워크 제약이 있는 이 환경
+  구조상 정직하게 남겨둔 것.
+
 ### 다음 세션에서 할 일
-- [ ] (환경 제약 있음) `collector_krx.py`, `collector_dart.py`를 네트워크 제약 없는 환경
-      (사용자 PC 등)에서 재검증하고, 되면 실제 데이터를 `build_daily_snapshot` →
-      `scoring_engine` → `phase_classifier` 전체 파이프라인에 흘려보는 end-to-end 테스트도 진행
-- [ ] `scripts/collectors/collector_credit_short.py` 프로토타입 작성 (pykrx로 공매도 잔고는
-      가능 확인함 — `get_shorting_balance_by_date`. 신용융자잔고는 pykrx에 API가 없어
-      FreeSIS 스크래핑이 필요한데, 이 환경에서 페이지 구조를 검증 못해 미구현 상태로 남길
-      계획 — 다음 세션에서 네트워크 되는 환경이면 마저 구현)
+- [ ] (환경 제약 있음) `collector_krx.py`, `collector_dart.py`, `collector_credit_short.py`를
+      네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고, 되면 실제 데이터를
+      `build_daily_snapshot` → `scoring_engine` → `phase_classifier` 전체 파이프라인에
+      흘려보는 end-to-end 테스트도 진행
+- [ ] `collector_credit_short.py`의 `get_credit_balance()` — FreeSIS 스크래핑으로 실제 구현
+      (네트워크 되는 환경에서 페이지 구조 확인 후)
 - [ ] 규칙기반 phase_classifier의 임계값/우선순위는 백테스트 전 잠정치 — 6장 백테스트로
-      실제 검증 필요 (아직 미착수)
+      실제 검증 필요 (아직 미착수, 실데이터 없이는 진행 불가)
+- [ ] Streamlit 대시보드(`scripts/dashboard/app_streamlit.py`) 착수 검토 — 지금까지 만든
+      지표~스코어링~국면분류 파이프라인을 눈으로 확인할 수 있는 최소 화면
 - [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 작업 단위 하나 완성 = 커밋 1개. 파일 생성/수정
       시마다 이 작업일지에 계속 기록할 것 (필수)
