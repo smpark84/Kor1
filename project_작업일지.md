@@ -138,10 +138,33 @@
   (코드 버그 아님, 테스트 기댓값 오류) : 완료
 - 전체 회귀 확인: `python3 -m pytest tests/` → **16 passed** (지표 1~5번 전부 포함) : 완료
 
+### 2026-07-10 추가 세션 — scoring_engine.py 초안 구현
+- [scripts/scoring/scoring_engine.py] : `percentile_rank_score()`(유니버스 내 백분위 랭크
+  0~100 정규화), `compute_score()`(카테고리별 원시 지표값을 config weights로 가중합, 결측
+  지표는 제외하고 남은 가중치 비율로 재정규화) 구현. 5개 지표 모듈(volume/flow/credit_short/
+  pattern/vi)의 원시 출력값을 이 엔진에 넣을 컬럼 형태(카테고리명 컬럼의 DataFrame)로
+  넘기면 바로 "세력 개입 의심 지수"가 산출되는 구조 : 완료
+- [tests/test_scoring_engine.py] : 4개 단위 테스트(랭크 정렬, 균등가중 평균 일치, 결측 지표
+  제외 재정규화, 알 수 없는 weights 키 예외) 작성 : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **20 passed** (지표 5개 + 스코어링 엔진
+  전체 포함, 회귀 없음) : 완료
+
+### 열린 이슈 / 다음 세션 확인 필요 (신규)
+4. **phase_classifier.py(국면 분류) 미착수**: `compute_score()`는 0~100 스코어까지만
+   내고, 이를 매집/상승/분산/하락 국면 라벨로 매핑하는 로직은 아직 없다. 규칙기반으로
+   갈지, 간단한 분류 모델(로지스틱회귀 등)로 갈지는 실제 데이터로 백테스트해봐야 판단
+   가능해서 임의로 정하지 않았다. 다음 세션에서 방향 논의 필요.
+5. **scoring_engine이 요구하는 입력 형식과 indicator_*.py 출력 형식이 아직 연결 안 됨**:
+   현재 indicator_*.py들은 종목 하나의 시계열(pd.Series)을 받아 시계열 결과를 반환하는
+   구조인데, scoring_engine은 "같은 시점, 여러 종목"을 비교하는 크로스섹션 DataFrame을
+   기대한다. 여러 종목의 지표 결과를 하루 단위로 모아 재구성하는 파이프라인 조립 코드가
+   아직 없음 — 다음 세션 우선 과제.
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
+- [ ] 위 열린 이슈 5: 여러 종목의 일별 지표값을 모아 scoring_engine 입력 형태로 조립하는
+      파이프라인(가칭 `scripts/scoring/build_daily_snapshot.py`) 설계·구현
+- [ ] 위 열린 이슈 4: `phase_classifier.py` 방향(규칙기반 vs 분류모델) 사용자와 논의 후 착수
 - [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
-- [ ] `scripts/scoring/scoring_engine.py` 초안 (가중합 방식, config/indicators_config.yaml의 weights 사용)
-- [ ] `tests/` 하위에 collector/indicator 단위 테스트 추가
-- [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 지표 하나 완성 = 커밋 1개. 파일 생성/수정 시마다
-      이 작업일지에 계속 기록할 것 (필수)
+- [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 작업 단위 하나 완성 = 커밋 1개. 파일 생성/수정
+      시마다 이 작업일지에 계속 기록할 것 (필수)
