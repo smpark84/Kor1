@@ -127,10 +127,19 @@
 - [tests/test_indicator_pattern.py] : 4개 단위 테스트(정배열 상승/하락 케이스, 눌림목 상승/
   하락 케이스), `pytest` 4 passed 확인 : 완료
 
+### 2026-07-10 추가 세션 — indicator_vi.py 구현 (MVP 지표 5번, 근사치)
+- [scripts/indicators/indicator_vi.py] : `is_static_vi_like_move()`(전일 종가 대비 ±N% 변동,
+  정적 VI 근사), `is_dynamic_vi_like_move()`(장중 고가/저가 vs 전일 종가 괴리, 동적 VI 근사),
+  `vi_like_trigger_count()`(최근 N개월 발동 근사 횟수) 구현. **⚠️ 실제 VI 이벤트 로그가 아닌
+  EOD OHLC 기반 근사치임을 모듈 최상단에 명시** — 실데이터 연동은 Phase 2(장중/실시간 수집)
+  과제로 이관 : 완료
+- [tests/test_indicator_vi.py] : 3개 단위 테스트 작성. 첫 버전에서 "112→100 복귀도 −10.7%라
+  트리거되는 게 정상"이라는 걸 놓쳐 기댓값을 잘못 세웠던 걸 테스트 실패로 발견해 수정
+  (코드 버그 아님, 테스트 기댓값 오류) : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **16 passed** (지표 1~5번 전부 포함) : 완료
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
-- [ ] `scripts/indicators/indicator_vi.py` (VI 발동 이력) — MVP 지표 5번 (일별 집계로 근사 가능한
-      소스 확인 필요, 없으면 Phase 2 실시간 수집 이후로 보류)
 - [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
 - [ ] `scripts/scoring/scoring_engine.py` 초안 (가중합 방식, config/indicators_config.yaml의 weights 사용)
 - [ ] `tests/` 하위에 collector/indicator 단위 테스트 추가
