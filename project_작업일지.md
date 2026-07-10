@@ -63,19 +63,26 @@
   `sources.md`로 이관했다. 신규 조사가 필요하면 다음 세션에서 `sources.md` 하단 로그에 추가.
 
 ### 열린 이슈 / 사용자 확인 필요 (2.8 원칙에 따라 기록)
-1. **MVP 우선 지표 3~5개 확정**: `docs/indicator_spec.md` 하단에 1차 제안(거래량 급증률,
-   기관+외국인 동반 순매수, 신용융자잔고율, 정배열+눌림목, VI 발동 이력)을 적어두었다.
-   임의로 최종 확정하지 않았으니 다음 세션 시작 시 사용자에게 확인 요청할 것.
+1. ~~**MVP 우선 지표 3~5개 확정**~~ → **2026-07-10 사용자 확인 완료.** 아래 5개로 확정:
+   (1) 거래량 급증률 (2) 기관+외국인 동반 순매수 연속일수/누적대금 (3) 신용융자잔고율 증가
+   추이 (4) 정배열 전환+눌림목 패턴 (5) VI 발동 이력. `docs/indicator_spec.md`도 "1차 제안"
+   문구를 "확정"으로 갱신 필요(다음 커밋에서 반영).
 2. **DART/KIS/텔레그램 API 키 미보유 상태**: `.env`는 아직 생성하지 않았다(값이 없으므로).
-   실제 수집을 시작하려면 사용자가 키를 발급받아 `.env`에 입력해야 함.
+   실제 수집을 시작하려면 사용자가 키를 발급받아 `.env`에 입력해야 함. (단, 확정된 MVP 5개
+   지표는 pykrx 공개 데이터만으로 계산 가능해 DART/KIS 키 없이도 구현 진행 가능.)
 3. **`docs/project_spec.md` 18KB 초과**: 8.2 분할 규칙의 취지(코드 모듈 관리 용이성)와는
    성격이 다른 "원문 보존" 목적이라 그대로 두었음. 문제 삼을 경우 챕터별로 쪼개는 것도 가능.
 
 ### 다음 세션에서 할 일
-- [ ] 사용자에게 MVP 우선 지표 3~5개 최종 확정 여부 확인 (위 열린 이슈 1)
 - [ ] `pip install -r requirements.txt` 후 `collector_krx.py` 실제 실행 테스트 (예: 삼성전자 005930)
+- [ ] `scripts/indicators/indicator_volume.py` (거래량 급증률) 구현 — MVP 지표 1번
+- [ ] `scripts/indicators/indicator_flow.py` (수급주체 동반 순매수) — MVP 지표 2번
+- [ ] `scripts/indicators/indicator_credit_short.py` (신용융자잔고율) — MVP 지표 3번
+- [ ] `scripts/indicators/indicator_pattern.py` (정배열+눌림목) — MVP 지표 4번
+- [ ] `scripts/indicators/indicator_vi.py` (VI 발동 이력) — MVP 지표 5번 (일별 집계로 근사 가능한
+      소스 확인 필요, 없으면 Phase 2 실시간 수집 이후로 보류)
 - [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
-- [ ] `scripts/indicators/indicator_volume.py` 부터 우선 지표 계산 로직 구현 시작
 - [ ] `scripts/scoring/scoring_engine.py` 초안 (가중합 방식, config/indicators_config.yaml의 weights 사용)
 - [ ] `tests/` 하위에 collector/indicator 단위 테스트 추가
-- [ ] 위 항목들 진행하면서 파일 생성/수정 시마다 이 작업일지에 계속 기록할 것 (필수)
+- [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 지표 하나 완성 = 커밋 1개. 파일 생성/수정 시마다
+      이 작업일지에 계속 기록할 것 (필수)
