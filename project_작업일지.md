@@ -73,8 +73,26 @@
 3. **`docs/project_spec.md` 18KB 초과**: 8.2 분할 규칙의 취지(코드 모듈 관리 용이성)와는
    성격이 다른 "원문 보존" 목적이라 그대로 두었음. 문제 삼을 경우 챕터별로 쪼개는 것도 가능.
 
+### 2026-07-10 추가 세션 — collector_krx.py 실행 시도 및 네트워크 제약 발견
+- [scripts/collectors/collector_krx.py] : `pip install pykrx pandas pyyaml python-dotenv` 후
+  `python3 -m scripts.collectors.collector_krx 005930 20260601 20260710` 로 실행 테스트 시도 : 보류
+- **중요 이슈(환경 제약, 코드 버그 아님)**: 이 Claude Code 클라우드 실행 환경(컨테이너)의
+  네트워크 정책이 `data.krx.co.kr`로 나가는 아웃바운드 요청을 프록시 단에서 403으로 차단함
+  (`requests.exceptions.ProxyError`, `curl $HTTPS_PROXY/__agentproxy/status` 확인 결과
+  `"connect_rejected", "gateway answered 403 to CONNECT (policy denial)"`). 이건 조직
+  egress 정책이라 우회 시도하지 않음(README 지침에 따라 재시도/우회 금지, 차단된 호스트만
+  보고).
+  - pykrx는 KRX/네이버 스크래핑 기반이라 이 환경에서는 원천적으로 동작하지 않을 가능성이 큼.
+  - **사용자 PC(로컬)나 다른 네트워크 제약 없는 환경에서 실행하면 정상 동작할 가능성이 높음**
+    — 코드 자체(`collector_krx.py`)는 구문/로직상 문제 없이 작성되어 있음.
+  - 이 실행 환경에서 데이터 수집 파이프라인을 계속 실제 검증하려면, 사용자가 이 환경의
+    네트워크 정책에 `data.krx.co.kr` 등 KRX/DART 관련 도메인을 허용해주거나, 로컬 PC에서
+    직접 실행해서 검증해야 함.
+  - 지표 계산 로직(`indicator_*.py`)은 실제 네트워크 호출 없이 합성/샘플 데이터로 단위
+    테스트가 가능하므로, 이 환경에서는 네트워크 검증 대신 지표 로직 구현·테스트를 우선 진행.
+
 ### 다음 세션에서 할 일
-- [ ] `pip install -r requirements.txt` 후 `collector_krx.py` 실제 실행 테스트 (예: 삼성전자 005930)
+- [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
 - [ ] `scripts/indicators/indicator_volume.py` (거래량 급증률) 구현 — MVP 지표 1번
 - [ ] `scripts/indicators/indicator_flow.py` (수급주체 동반 순매수) — MVP 지표 2번
 - [ ] `scripts/indicators/indicator_credit_short.py` (신용융자잔고율) — MVP 지표 3번
