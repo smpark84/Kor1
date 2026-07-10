@@ -11,9 +11,17 @@
 실제 데이터 연동은 scripts/collectors/*.py를 네트워크 제약 없는 환경에서 실행해 그 결과를
 load_screening_table()에 연결하면 된다.
 
-실행: streamlit run scripts/dashboard/app_streamlit.py
+실행: streamlit run scripts/dashboard/app_streamlit.py  (프로젝트 루트에서, PYTHONPATH 설정 불필요)
 """
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+# streamlit run은 스크립트 자신의 디렉터리만 sys.path에 넣고 프로젝트 루트는 넣지
+# 않는다. 그 결과 "scripts.*" 임포트가 실패하므로(2026-07-10 작업일지 참고), 프로젝트
+# 루트를 직접 sys.path에 추가해 실행 환경/작업 디렉터리와 무관하게 동작하도록 한다.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 import pandas as pd

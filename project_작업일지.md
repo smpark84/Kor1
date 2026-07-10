@@ -236,6 +236,17 @@
   레벨에서 모두 완성됨. 단, 데이터는 여전히 데모 상태 — 실제 KRX 연동은 이 환경 네트워크
   제약으로 다음 세션(네트워크 되는 환경)에서 마저 진행해야 함.
 
+### 2026-07-10 추가 세션 — app_streamlit.py: PYTHONPATH 없이 실행되도록 수정
+- [scripts/dashboard/app_streamlit.py] : 파일 최상단에 `sys.path.insert(0, 프로젝트루트)`
+  추가. 사용자가 로컬 PC에서 실행할 때 `PYTHONPATH`를 수동으로 안 잡아도 되게 하려는 목적
+  (기존엔 `PYTHONPATH=... streamlit run ...`이 필요했음, 2026-07-10 앞선 기록 참고) : 완료
+- **재검증**: 순수 `streamlit run scripts/dashboard/app_streamlit.py` (PYTHONPATH 미설정)로
+  서버 실행 → Playwright로 스크린샷 → 제목/데모모드 경고/테이블/고지문구 정상 렌더링 확인.
+  중간에 백그라운드 프로세스가 도구 호출 경계에서 종료되는 문제를 겪어 `( ... & )` 서브셸
+  detach 패턴으로 해결(디버깅 과정이라 결과에 영향 없음) : 완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **36 passed** (테스트 개수 변화 없음, 이번
+  수정은 import 경로 안정성 개선일 뿐 로직 변경 아님) : 완료
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음, 최우선) `collector_krx.py`, `collector_dart.py`,
       `collector_credit_short.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고,
