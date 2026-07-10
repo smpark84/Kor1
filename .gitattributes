@@ -1,0 +1,2 @@
+# Windows 배치 파일은 CRLF로 강제 (cmd.exe 호환성)
+*.bat text eol=crlf

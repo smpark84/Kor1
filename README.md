@@ -46,11 +46,25 @@ sources.md            리서치 출처 및 신뢰도
 
 ## 시작하기
 
+### Windows (원클릭)
+
+1. 이 저장소를 클론(또는 ZIP 다운로드)한다.
+2. `setup.bat`을 더블클릭한다 — 가상환경 생성, 패키지 설치, `.env` 파일 준비까지 자동으로
+   처리된다.
+3. `run_dashboard.bat`을 더블클릭하면 대시보드가 브라우저로 열린다 (지금은 데모 데이터).
+4. `run_collector.bat`을 더블클릭하고 종목코드/기간을 입력하면 실제 KRX 데이터를 수집해
+   `data/raw/krx/`에 저장한다.
+5. DART 공시 수집기를 쓰려면 `.env` 파일을 열어 `DART_API_KEY`를 채운다
+   (https://opendart.fss.or.kr 무료 발급).
+
+### 수동 설치 (Mac/Linux 또는 직접 제어하고 싶을 때)
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # 실제 키 값 입력 (커밋 금지)
+streamlit run scripts/dashboard/app_streamlit.py
 ```
 
 ## 보안

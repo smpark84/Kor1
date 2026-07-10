@@ -247,6 +247,28 @@
 - 전체 회귀 확인: `python3 -m pytest tests/` → **36 passed** (테스트 개수 변화 없음, 이번
   수정은 import 경로 안정성 개선일 뿐 로직 변경 아님) : 완료
 
+### 2026-07-10 추가 세션 — Windows 원클릭 실행 스크립트 추가
+- 사용자가 "내 PC에 접근 가능하냐"고 물어봄 → **명확히 정정**: 이 세션은 사용자 PC가 아닌
+  클라우드 컨테이너에서 동작하며 사용자 로컬 파일시스템에 접근할 수 없다고 안내. 대신 로컬
+  설치 단계를 최소화하는 배치 스크립트를 제공하기로 함(사용자 동의).
+- [setup.bat] : 가상환경(.venv) 생성 → `pip install -r requirements.txt` → `.env.example`을
+  `.env`로 복사(없을 때만)까지 한 번에 처리하는 Windows 더블클릭 설치 스크립트. Python 미설치
+  시 명확한 안내 후 종료 : 완료
+- [run_dashboard.bat] : 가상환경 활성화 후 `streamlit run scripts/dashboard/app_streamlit.py`
+  실행하는 더블클릭 스크립트 : 완료
+- [run_collector.bat] : 종목코드/시작일/종료일을 `set /p`로 입력받아
+  `python -m scripts.collectors.collector_krx`를 실행하는 더블클릭 스크립트 : 완료
+- [.gitattributes] : `*.bat text eol=crlf` 추가 — Windows 배치 파일이 cmd.exe와 확실히
+  호환되도록 CRLF 강제 : 완료
+- [README.md] : "시작하기"를 "Windows (원클릭)"과 "수동 설치(Mac/Linux)" 두 경로로 분리 :
+  완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **36 passed** (배치 파일은 파이썬 로직에
+  영향 없음, 회귀 확인 차원) : 완료
+- **한계 고지**: 이 환경에서는 `.bat` 파일을 실제 Windows cmd.exe로 실행해서 검증할 방법이
+  없다(Linux 컨테이너). 문법을 신중히 작성했지만 실제 Windows에서 최초 실행 시 문제가
+  생기면 다음 세션에서 고쳐야 함 — 사용자가 처음 실행할 때 오류 메시지를 그대로 알려주면
+  바로 수정 가능.
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음, 최우선) `collector_krx.py`, `collector_dart.py`,
       `collector_credit_short.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증하고,
