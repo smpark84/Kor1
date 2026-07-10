@@ -160,11 +160,24 @@
    기대한다. 여러 종목의 지표 결과를 하루 단위로 모아 재구성하는 파이프라인 조립 코드가
    아직 없음 — 다음 세션 우선 과제.
 
+### 2026-07-10 추가 세션 — build_daily_snapshot.py 구현 (열린 이슈 5 해소)
+- [scripts/scoring/build_daily_snapshot.py] : `build_ticker_features()`(종목 1개 시계열 →
+  카테고리별 원시 피처 pd.Series: volume=거래량급증비율, flow=동반순매수 연속일수,
+  credit_short=신용잔고율 변화율, pattern=정배열+눌림목 판정 합(0~2), vi=VI근사 발동횟수),
+  `build_daily_snapshot()`(여러 종목 dict → scoring_engine 입력용 DataFrame 조립) 구현.
+  indicator_*.py 5개 모듈을 실제로 연결해서 쓰는 첫 통합 코드 : 완료
+- [tests/test_build_daily_snapshot.py] : 4개 테스트(피처 값 검증, 필수 컬럼 누락 예외,
+  다종목 조립, `scoring_engine.compute_score()`로 바로 흘려보내는 통합 스모크 테스트) 작성 :
+  완료
+- 전체 회귀 확인: `python3 -m pytest tests/` → **24 passed** : 완료
+- **열린 이슈 5 해소.** 사용자가 "알아서 진행해"로 위임해, 규칙기반 vs ML 선택이 필요한
+  열린 이슈 4(phase_classifier)는 지침서 10장("1차 규칙기반 접근 우선 제안" 원칙)과
+  1.5장 1차 설계안을 근거로 **규칙기반으로 우선 진행**하기로 판단하고 바로 이어감(사용자가
+  다른 방향을 원하면 다음 세션에서 언제든 변경 가능하도록 "1차 설계안, 백테스트 전 잠정"
+  임을 코드에 명시할 예정).
+
 ### 다음 세션에서 할 일
 - [ ] (환경 제약 있음) `collector_krx.py`를 네트워크 제약 없는 환경(사용자 PC 등)에서 재검증
-- [ ] 위 열린 이슈 5: 여러 종목의 일별 지표값을 모아 scoring_engine 입력 형태로 조립하는
-      파이프라인(가칭 `scripts/scoring/build_daily_snapshot.py`) 설계·구현
-- [ ] 위 열린 이슈 4: `phase_classifier.py` 방향(규칙기반 vs 분류모델) 사용자와 논의 후 착수
 - [ ] `scripts/collectors/collector_dart.py`, `collector_credit_short.py` 프로토타입 작성
 - [ ] 커밋 규칙(위 "커밋 규칙" 섹션) 준수: 작업 단위 하나 완성 = 커밋 1개. 파일 생성/수정
       시마다 이 작업일지에 계속 기록할 것 (필수)
